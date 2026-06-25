@@ -1,0 +1,5 @@
+vkf_version: 0.3.0
+okf_version: "0.1"
+name: vkf-benchmark
+summary: A governance-stress bundle for the VKF vs OKF vs RAG benchmark.
+profile: 1

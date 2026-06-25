@@ -1,0 +1,51 @@
+# Expected validation outcome per case, per conformance profile.
+# 'error' = has_errors() is true; 'pass' = no errors.
+
+okf-minimal:
+  0: pass
+  1: pass
+  2: pass
+okf-no-type:
+  0: error
+  1: error
+  2: error
+unregistered-type-tolerated:
+  0: pass
+  1: pass
+  2: pass
+governed-clean:
+  0: pass
+  1: pass
+  2: pass
+missing-owner:
+  0: pass
+  1: error
+  2: error
+dangling-ref:
+  0: pass
+  1: error
+  2: error
+dependency-cycle:
+  0: pass
+  1: error
+  2: error
+bad-date:
+  0: pass
+  1: error
+  2: error
+duplicate-alias:
+  0: pass
+  1: error
+  2: error
+verified-no-last-verified:
+  0: pass
+  1: pass
+  2: error
+claim-no-evidence:
+  0: pass
+  1: pass
+  2: error
+malformed-claim:
+  0: pass
+  1: error
+  2: error

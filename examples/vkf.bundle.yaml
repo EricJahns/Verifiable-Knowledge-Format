@@ -1,0 +1,15 @@
+vkf_version: 0.2.0
+okf_version: "0.1"
+name: vkf-examples
+summary: Example bundle demonstrating VKF governance on top of OKF.
+# Conformance profile this bundle commits to:
+#   0 = okf-compatible (never fails)   1 = governed   2 = verified
+profile: 1
+schemas:
+  object: object.schema.json
+compilation_targets:
+  - static_docs
+  - vector_index
+  - knowledge_graph
+  - permission_index
+  - audit_report

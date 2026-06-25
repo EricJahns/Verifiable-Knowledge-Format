@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://raw.githubusercontent.com/EricJahns/Verifiable-Knowledge-Format/main/src/vkf/schemas/object.schema.json",
+  "title": "VKF Object",
+  "description": "Frontmatter of a VKF concept document. VKF is a strict superset of OKF v0.1: the only field OKF requires is `type`, so the JSON Schema enforces only OKF-level structural conformance. Stricter VKF guarantees (owners, ISO dates, resolvable references, lifecycle rules) are enforced per conformance profile by the validator, not here, so that any conformant OKF bundle also validates as a (Profile 0) VKF bundle.",
+  "type": "object",
+  "required": ["type"],
+  "properties": {
+    "type": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Concept type. Freeform per OKF. VKF defines a registry of *known* types (see $defs.knownType) that unlock type-specific validation; unknown types are tolerated."
+    },
+    "vkf_version": {"type": "string"},
+    "okf_version": {"type": "string"},
+    "profile": {"type": "integer", "minimum": 0, "maximum": 2, "description": "Per-document conformance profile override. Defaults to the bundle profile."},
+    "id": {
+      "type": "string",
+      "pattern": "^[a-z][a-z0-9_]*:[a-z0-9][a-z0-9_\\-]*$",
+      "description": "Optional stable alias of the form <type>:<slug>. Canonical identity is the bundle-relative file path (OKF rule); `id` provides a stable handle that survives moves and enables cross-bundle references."
+    },
+    "title": {"type": "string", "minLength": 1},
+    "summary": {"type": "string"},
+    "description": {"type": "string"},
+    "resource": {"type": "string", "description": "OKF: URI uniquely identifying the underlying asset."},
+    "status": {"type": "string", "enum": ["draft", "active", "verified", "stale", "deprecated", "superseded", "archived", "disputed", "retracted"]},
+    "owners": {"type": "array", "items": {"type": "string"}},
+    "visibility": {"type": "string", "enum": ["public", "internal", "confidential", "restricted", "private"]},
+    "created": {"type": ["string", "object", "null"]},
+    "last_verified": {"type": ["string", "object", "null"]},
+    "valid_until": {"type": ["string", "object", "null"]},
+    "timestamp": {"type": ["string", "object", "null"], "description": "OKF: ISO 8601 datetime of last meaningful change."},
+    "tags": {"type": "array", "items": {"type": "string"}},
+    "depends_on": {"type": "array", "items": {"type": "string"}},
+    "supersedes": {"type": "array", "items": {"type": "string"}},
+    "superseded_by": {"type": ["string", "null"]},
+    "conflicts_with": {"type": "array", "items": {"type": "string"}},
+    "derived_from": {"type": "array", "items": {"type": "string"}},
+    "confidence": {"type": "string", "enum": ["low", "medium", "high", "very_high"]},
+    "evidence": {"type": "array", "items": {"$ref": "#/$defs/evidence"}},
+    "access": {"$ref": "#/$defs/access"},
+    "verification": {"$ref": "#/$defs/verification"}
+  },
+  "additionalProperties": true,
+  "$defs": {
+    "knownType": {
+      "enum": ["concept", "claim", "decision", "policy", "runbook", "dataset", "metric", "experiment", "artifact", "transaction"]
+    },
+    "evidence": {
+      "type": "object",
+      "required": ["source"],
+      "properties": {
+        "id": {"type": "string"},
+        "type": {"type": "string", "enum": ["document", "dataset", "experiment", "survey", "log", "code", "policy", "human_review", "external_source", "artifact", "other"]},
+        "source": {"type": "string"},
+        "strength": {"type": "string", "enum": ["weak", "moderate", "strong", "definitive"]},
+        "visibility": {"type": "string", "enum": ["public", "internal", "confidential", "restricted", "private"]},
+        "last_checked": {"type": "string"}
+      },
+      "additionalProperties": true
+    },
+    "access": {
+      "type": "object",
+      "properties": {
+        "allowed_roles": {"type": "array", "items": {"type": "string"}},
+        "denied_roles": {"type": "array", "items": {"type": "string"}},
+        "allowed_uses": {"type": "array", "items": {"type": "string"}},
+        "forbidden_uses": {"type": "array", "items": {"type": "string"}},
+        "requires_review_for": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    },
+    "verification": {
+      "type": "object",
+      "properties": {
+        "command": {"type": "string"},
+        "expected": {"type": "object"},
+        "artifacts": {"type": "array", "items": {"type": "string"}}
+      },
+      "additionalProperties": true
+    }
+  }
+}

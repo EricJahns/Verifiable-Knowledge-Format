@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VKF Transaction",
+  "type": "object",
+  "required": ["id", "actor", "action", "target", "timestamp"],
+  "properties": {
+    "id": {"type": "string"},
+    "actor": {"type": "string"},
+    "action": {"type": "string", "enum": ["created", "updated", "proposed_update", "deprecated", "verified", "marked_stale", "resolved_conflict", "generated"]},
+    "target": {"type": "string"},
+    "timestamp": {"type": "string"},
+    "reason": {"type": "string"},
+    "evidence": {"type": "array", "items": {"type": "string"}},
+    "requires_human_approval": {"type": "boolean"}
+  },
+  "additionalProperties": true
+}

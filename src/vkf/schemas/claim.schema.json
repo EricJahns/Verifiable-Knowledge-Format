@@ -1,0 +1,16 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VKF Claim",
+  "type": "object",
+  "required": ["id", "confidence"],
+  "properties": {
+    "id": {"type": "string", "pattern": "^claim:[a-z0-9_\\-]+$"},
+    "confidence": {"type": "string", "enum": ["low", "medium", "high", "very_high"]},
+    "evidence": {"type": "array", "items": {"type": "object"}},
+    "assumptions": {"type": "array", "items": {"type": "string"}},
+    "scope": {"type": "string"},
+    "allowed_uses": {"type": "array", "items": {"type": "string"}},
+    "forbidden_uses": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VKF Permission",
+  "type": "object",
+  "properties": {
+    "allowed_roles": {"type": "array", "items": {"type": "string"}},
+    "denied_roles": {"type": "array", "items": {"type": "string"}},
+    "allowed_uses": {"type": "array", "items": {"type": "string"}},
+    "forbidden_uses": {"type": "array", "items": {"type": "string"}},
+    "requires_review_for": {"type": "array", "items": {"type": "string"}}
+  },
+  "additionalProperties": true
+}

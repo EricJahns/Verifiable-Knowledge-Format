@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VKF Evidence",
+  "type": "object",
+  "required": ["source"],
+  "properties": {
+    "id": {"type": "string"},
+    "type": {"type": "string", "enum": ["document", "dataset", "experiment", "survey", "log", "code", "policy", "human_review", "external_source", "artifact", "other"]},
+    "source": {"type": "string"},
+    "strength": {"type": "string", "enum": ["weak", "moderate", "strong", "definitive"]},
+    "visibility": {"type": "string", "enum": ["public", "internal", "confidential", "restricted", "private"]},
+    "last_checked": {"type": "string"}
+  },
+  "additionalProperties": true
+}

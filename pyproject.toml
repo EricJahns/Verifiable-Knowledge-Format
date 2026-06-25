@@ -1,0 +1,55 @@
+[build-system]
+requires = ["setuptools>=64", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "vkf"
+version = "0.4.0"
+description = "Verifiable Knowledge Format — a governance and trust layer that is a strict superset of OKF v0.1"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "MIT"}
+keywords = ["knowledge", "okf", "agents", "rag", "provenance", "markdown"]
+authors = [{name = "VKF contributors"}]
+dependencies = [
+  "pyyaml>=6.0",
+  "jsonschema>=4.18",
+  "python-frontmatter>=1.0.0",
+]
+
+[project.optional-dependencies]
+server = ["fastapi>=0.110", "uvicorn>=0.27"]
+bench = ["anthropic>=0.40"]
+dev = ["pytest>=7", "pytest-cov>=4", "ruff>=0.4", "mypy>=1.8"]
+
+[project.scripts]
+vkf = "vkf.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/EricJahns/Verifiable-Knowledge-Format"
+Specification = "https://github.com/EricJahns/Verifiable-Knowledge-Format/blob/main/docs/SPEC.md"
+Changelog = "https://github.com/EricJahns/Verifiable-Knowledge-Format/blob/main/CHANGELOG.md"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.setuptools.package-data]
+vkf = ["schemas/*.json"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]
+
+[tool.ruff]
+line-length = 110
+target-version = "py310"
+src = ["src", "tests"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.10"
+ignore_missing_imports = true
+files = ["src/vkf"]
