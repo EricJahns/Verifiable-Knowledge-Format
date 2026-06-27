@@ -47,6 +47,24 @@ Agents should not:
 - upgrade restricted content into public output
 - modify canonical knowledge without transaction records
 
+### The continuous-loop pattern
+
+VKF is designed for an agent run on a schedule (or in a long-running loop) that
+periodically walks the bundle to **grow and maintain** it: derive new claims from
+existing objects, propose evidence links, flag objects that look stale or
+mutually conflicting, and draft new objects for facts the base is missing. This
+is the package's primary motivating use case.
+
+The loop stays safe because the agent only ever *proposes*. Every new or changed
+object an agent writes lands at `status: draft` (or `proposed`); the agent
+**never** promotes its own work to `active` or `verified`. Promotion through the
+`draft → active → verified` lifecycle is a human action, and the conformance
+profiles plus retrieval defaults (prefer `verified`/`active`, warn on `draft`)
+mean unverified agent output is treated cautiously until a human reviews and
+promotes it. Surface each pass as an ordinary Git change with a transaction
+record so a human can review it as a normal pull request — see the
+propose-don't-promote flow in [AUTHORING.md](AUTHORING.md).
+
 ## Answer style
 
 When answering from VKF, agents should include:

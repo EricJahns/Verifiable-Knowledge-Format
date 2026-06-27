@@ -6,8 +6,10 @@
 > format, which VKF builds on top of. The spec is a candidate, not a finished
 > standard — expect breaking changes before 1.0.
 
-**VKF is a Git-native, human-readable, agent-operable knowledge format that makes
-organizational knowledge *trustworthy enough for agents to act on*.**
+**VKF is a Git-native, human-readable knowledge format that lets agents *author*
+knowledge — not just read it — while a human stays the gatekeeper of what becomes
+authoritative. It makes organizational knowledge *trustworthy enough for agents
+to act on*, because nothing an agent writes is trusted until a human verifies it.**
 
 It is a **strict superset of Google's [Open Knowledge Format (OKF) v0.1](https://github.com/GoogleCloudPlatform/knowledge-catalog/tree/main/okf)**.
 OKF makes knowledge *portable* — a directory of markdown files with YAML
@@ -47,6 +49,34 @@ OKF tooling can still consume your bundles. This isn't just asserted: the test
 suite validates **Google's actual published OKF sample bundles** (the
 `crypto_bitcoin` and `stackoverflow` BigQuery bundles) and confirms they pass at
 Profile 0 (see `tests/okf_samples/`).
+
+---
+
+## Agents that grow the knowledge base, humans who verify it
+
+Those governance fields unlock VKF's primary motivating use case: agents that
+*author* knowledge, not just read it. OKF is a read-oriented portability format;
+VKF is designed so you can put an agent in a loop — periodically crawling the
+bundle, deriving new claims, linking evidence, flagging stale or conflicting
+facts, and *proposing* new objects — and stay safe doing it.
+
+What makes the loop safe is that trust in VKF is structural, not editorial:
+
+- An agent can freely add objects and claims, but only at `status: draft` /
+  `proposed`. Agents **never self-promote to `verified`** — promotion through the
+  `draft → active → verified` lifecycle is a human action, enforced by the
+  validator and the conformance profiles.
+- Until a human verifies it, the rest of the system already knows to treat it
+  cautiously: retrieval prefers `verified`/`active` objects and warns on drafts,
+  and `serve` can withhold unverified content from answers.
+- Every agent contribution arrives as an ordinary Git change — a PR a human
+  reviews, with `vkf validate` as the gate — so an agent expanding the knowledge
+  base looks exactly like a contributor opening a pull request.
+
+The result is a knowledge base an autonomous agent can continuously *grow* while
+the human stays the gatekeeper of what becomes authoritative. For the mechanics,
+see the propose-don't-promote flow in [Authoring knowledge](#authoring-knowledge)
+and the agent rules in [docs/AGENT_GUIDE.md](docs/AGENT_GUIDE.md).
 
 ---
 
