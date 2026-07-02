@@ -9,7 +9,7 @@ opt-in conformance profiles with validation teeth.
 
 from __future__ import annotations
 
-__version__ = "0.5.0"
+__version__ = "0.5.1"
 
 from .loader import KnowledgeObject, load_object, load_objects  # noqa: E402
 
