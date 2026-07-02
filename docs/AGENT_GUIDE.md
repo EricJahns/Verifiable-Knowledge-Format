@@ -94,3 +94,10 @@ doesn't have to reimplement it:
 This is the mechanism behind the benchmark result in `benchmark/`: governed,
 permission-aware retrieval measurably reduces permission leaks versus OKF or
 plain RAG.
+
+The same behavior is available over the **Model Context Protocol** via
+`vkf mcp <bundle>`, so an MCP host (Claude Code, Claude Desktop, Gemini CLI, …)
+gets `search`, `check_permission`, `get_concept`, `list_concepts`, `freshness`,
+`validate`, and `graph` as tools with no integration code — see
+[MCP.md](MCP.md). Always pass a `use` context to `search` so permission-restricted
+concepts are filtered out before they can enter an answer.

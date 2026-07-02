@@ -191,14 +191,50 @@ curl "localhost:8000/search?q=events&use=public_release"
 
 Other endpoints: `/concepts`, `/concepts/{id-or-path}`, `/graph`, `/freshness`,
 `/validate?profile=2`. The same engine (`vkf.service.KnowledgeService`) powers
-the offline `vkf html` visualizer, whose nodes are coloured by freshness and
-edges styled by typed relation.
+the offline `vkf html` visualizer: a single dependency-free file with a live
+force-directed layout, zoom/pan, hover-to-focus (dim everything except a node
+and its neighbours), search, and type filters. Nodes are filled by freshness,
+ringed by visibility, and carry a type glyph; edges are curved and directed with
+a per-relation arrowhead. Long identifiers stay legible — labels truncate with a
+readable background and expand on focus/selection.
 
 > ⚠️ `vkf serve` ships **no authentication** and binds to localhost by default —
 > it's for local development and trusted networks. Don't expose it publicly
 > without putting your own auth/authorization in front of it. The permission
 > model is a *cooperative* control for trusted agents, not a hard access boundary
 > (see [SECURITY.md](SECURITY.md)).
+
+---
+
+## Serve it to agents (MCP)
+
+Most agent hosts — Claude Code, Claude Desktop, the Gemini CLI, Cursor — consume
+tools over the **Model Context Protocol**. VKF ships an MCP server so any of them
+can use a bundle with no integration code:
+
+```bash
+pip install -e ".[mcp]"
+vkf mcp examples              # stdio MCP server
+```
+
+Register it once and the agent gets permission-aware `search`, `check_permission`,
+`get_concept`, `list_concepts`, `freshness`, `validate`, and `graph` as tools:
+
+```bash
+# Claude Code:
+claude mcp add vkf -- vkf mcp /absolute/path/to/your-bundle
+```
+
+```jsonc
+// Claude Desktop (claude_desktop_config.json), and most other MCP hosts:
+{ "mcpServers": { "vkf": { "command": "vkf", "args": ["mcp", "/absolute/path/to/your-bundle"] } } }
+```
+
+The tools are backed by the same `KnowledgeService` as `vkf serve`, so the
+governance guarantees carry over: a `search` with `use=public_release` never
+returns the confidential `dataset:user_events`, so it can't leak into a public
+answer. Full setup, tool reference, and worked prompts are in
+**[docs/MCP.md](docs/MCP.md)**.
 
 ---
 
@@ -244,7 +280,7 @@ docs/                        design principles, agent guide, security model, CI
 src/vkf/                     reference implementation
   loader.py  claims.py  validate.py  graph.py  freshness.py
   permissions.py  interop.py  manifest.py  cli.py  schemas/
-  service.py  server.py  html.py    retrieval engine, HTTP API, visualizer
+  service.py  server.py  mcp_server.py  html.py   retrieval engine, HTTP + MCP APIs, visualizer
 examples/                    a conformant bundle (profile: 1) + vkf.bundle.yaml
 templates/                   one starter per object type
 conformance/                 pass/fail corpus pinning the profile semantics

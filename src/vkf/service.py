@@ -158,6 +158,26 @@ class KnowledgeService:
         hits.sort(key=lambda h: h.score, reverse=True)
         return hits[:limit]
 
+    def check(self, ref: str, use: str, role: str | None = None) -> dict[str, Any] | None:
+        """Permission check for a single concept, resolved by id/alias/path.
+
+        Returns ``None`` when ``ref`` is unknown so callers can distinguish a
+        missing concept from a denied one.
+        """
+        obj = self._by_ref.get(ref)
+        if obj is None:
+            return None
+        decision = can_use(obj.metadata, use, role=role)
+        return {
+            "id": obj.display_id,
+            "concept_id": obj.concept_id,
+            "use_context": use,
+            "role": role,
+            "allowed": decision.allowed,
+            "requires_review": decision.requires_review,
+            "reason": decision.reason,
+        }
+
     # ---- compiled views ------------------------------------------------
     def graph(self, include_body_links: bool = True) -> dict[str, Any]:
         return build_graph(self.root, include_body_links=include_body_links)
