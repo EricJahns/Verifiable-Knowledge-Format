@@ -5,6 +5,17 @@ to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.1] - 2026-07-01
+
+### Fixed
+- **`vkf html`: clicking a node now opens its detail panel.** Starting a node
+  press captured the pointer on the `<svg>`, which retargets the native `click`
+  to the svg — so the per-node click handler never fired and the background
+  handler cleared the selection instead. Selection now happens on
+  pointerup-without-movement (a tap), tracked independently of `click`; a node is
+  pinned only once an actual drag passes a small movement threshold, so a plain
+  tap selects without pinning.
+
 ## [0.5.0] - 2026-07-01
 
 ### Added

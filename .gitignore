@@ -18,6 +18,7 @@ htmlcov/
 
 # Generated artifacts
 graph.json
+graph.html
 /okf-export/
 *.tmp
 

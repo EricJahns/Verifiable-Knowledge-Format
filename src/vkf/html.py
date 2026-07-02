@@ -291,7 +291,6 @@ const nEls = nodes.map((n,i)=>{
   g.addEventListener("pointerenter", ()=>{ hovered=i; applyVisual(); });
   g.addEventListener("pointerleave", ()=>{ if(hovered===i){ hovered=-1; applyVisual(); } });
   g.addEventListener("pointerdown", ev=> startNodeDrag(ev,i));
-  g.addEventListener("click", ev=>{ ev.stopPropagation(); select(i); });
   g.addEventListener("dblclick", ev=>{ ev.stopPropagation(); nodes[i].fixed=false; reheat(0.4); });
   nLayer.appendChild(g); return {g, r, lbl};
 });
@@ -373,25 +372,39 @@ $("zrst").onclick = fit;
 $("fit").onclick = fit;
 
 // --- pointer drag (pan background or move a node) -------------------------
-let dragNode=-1, panning=false, moved=false, last=null;
+// Selection happens on pointerup-without-movement (a "tap"), not on click:
+// startNodeDrag captures the pointer on the <svg>, which retargets the native
+// click to the svg, so a per-node click handler would never fire.
+const TAP = 4;   // px of movement below which a press counts as a tap, not a drag
+let dragNode=-1, panning=false, moved=false, last=null, start=null;
 function toWorld(ev){ const r=svg.getBoundingClientRect();
   return { x:(ev.clientX-r.left-tx)/scale, y:(ev.clientY-r.top-ty)/scale }; }
-function startNodeDrag(ev,i){ ev.stopPropagation(); dragNode=i; moved=false; nodes[i].fixed=true;
-  reheat(0.35); svg.setPointerCapture(ev.pointerId); }
+function startNodeDrag(ev,i){ ev.stopPropagation(); dragNode=i; moved=false;
+  start=last={x:ev.clientX,y:ev.clientY}; reheat(0.35); svg.setPointerCapture(ev.pointerId); }
 svg.addEventListener("pointerdown", ev=>{ if(dragNode>=0) return; panning=true; moved=false;
-  last={x:ev.clientX,y:ev.clientY}; svg.classList.add("panning"); svg.setPointerCapture(ev.pointerId); });
+  start=last={x:ev.clientX,y:ev.clientY}; svg.classList.add("panning"); svg.setPointerCapture(ev.pointerId); });
 svg.addEventListener("pointermove", ev=>{
-  if(dragNode>=0){ moved=true; const w=toWorld(ev); const n=nodes[dragNode]; n.x=w.x; n.y=w.y; n.vx=0; n.vy=0; render(); }
-  else if(panning){ moved=true; tx+=ev.clientX-last.x; ty+=ev.clientY-last.y; last={x:ev.clientX,y:ev.clientY}; applyView(); }
+  if(dragNode<0 && !panning) return;
+  if(!moved && start && Math.hypot(ev.clientX-start.x, ev.clientY-start.y) > TAP) moved=true;
+  if(dragNode>=0){
+    if(moved){ nodes[dragNode].fixed=true;                 // pin only once a real drag starts
+      const w=toWorld(ev); const n=nodes[dragNode]; n.x=w.x; n.y=w.y; n.vx=0; n.vy=0; render(); }
+  } else if(panning){
+    tx+=ev.clientX-last.x; ty+=ev.clientY-last.y; last={x:ev.clientX,y:ev.clientY}; applyView();
+  }
 });
 function endDrag(){
-  // A dragged node stays pinned where you dropped it; double-click it to release.
-  if(dragNode>=0){ dragNode=-1; reheat(0.15); }
-  panning=false; svg.classList.remove("panning");
+  if(dragNode>=0){
+    if(!moved) select(dragNode);        // tap on a node -> inspect it
+    else reheat(0.15);                  // dropped after a drag; it stays pinned (dbl-click releases)
+    dragNode=-1;
+  } else if(panning && !moved){
+    select(-1);                         // tap on empty space -> clear selection
+  }
+  panning=false; start=null; svg.classList.remove("panning");
 }
 svg.addEventListener("pointerup", endDrag);
 svg.addEventListener("pointercancel", endDrag);
-svg.addEventListener("click", ()=>{ if(!moved){ select(-1); } });
 
 // --- focus / search / filter ---------------------------------------------
 let selected=-1, hovered=-1, query="", hidden=new Set();
