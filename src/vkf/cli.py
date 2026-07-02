@@ -118,6 +118,13 @@ def cmd_serve(args) -> int:  # pragma: no cover - exercised manually
     return 0
 
 
+def cmd_mcp(args) -> int:  # pragma: no cover - exercised manually
+    from .mcp_server import run
+    print(f"Starting VKF MCP server for bundle '{args.root}' on stdio", file=sys.stderr)
+    run(args.root)
+    return 0
+
+
 def cmd_benchmark(args) -> int:
     from . import benchmark as bench
     scenarios = bench.load_scenarios(args.scenarios)
@@ -220,6 +227,10 @@ def main(argv=None) -> int:
     p.add_argument("--host", default="127.0.0.1")
     p.add_argument("--port", type=int, default=8000)
     p.set_defaults(func=cmd_serve)
+
+    p = sub.add_parser("mcp", help="Serve a bundle to agents over MCP on stdio (needs 'vkf[mcp]')")
+    p.add_argument("root")
+    p.set_defaults(func=cmd_mcp)
 
     p = sub.add_parser("benchmark", help="Run the VKF vs OKF vs RAG benchmark")
     p.add_argument("--bundle", default="benchmark/bundle")

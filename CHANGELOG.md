@@ -5,7 +5,27 @@ to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.5.0] - 2026-07-01
+
 ### Added
+- **Redesigned `vkf html` visualizer.** The single-file graph viewer now runs a
+  live cooling force-directed layout with full interaction: scroll/pinch to zoom,
+  drag the background to pan, drag a node to pin it (double-click to release),
+  Fit-view, Re-layout, and Freeze controls. Hovering a node focuses the graph on
+  it and its neighbours (everything else dims); there's full-text search and
+  click-to-toggle type filters. Nodes are filled by freshness, ringed by
+  visibility, and carry a type glyph; edges are curved and directed with
+  per-relation arrowheads. Long identifiers stay readable — labels truncate onto
+  a legible pill and expand on focus, with the full id in the tooltip and detail
+  panel — fixing the previous overlap-into-soup behaviour on real bundles.
+- **MCP server** (`vkf mcp <bundle>`, `vkf.mcp_server.create_mcp`): serves a
+  bundle to any Model Context Protocol host (Claude Code, Claude Desktop, Gemini
+  CLI, Cursor, …) over stdio, exposing permission-aware `search`,
+  `check_permission`, `get_concept`, `list_concepts`, `freshness`, `validate`,
+  and `graph` as tools. Backed by the same `KnowledgeService` as `vkf serve`, so
+  a `public_release` search still withholds confidential concepts. New optional
+  extra `vkf[mcp]`; setup and client configs in `docs/MCP.md`. Added
+  `KnowledgeService.check(ref, use, role)` for id/alias-based permission checks.
 - **Real-OKF interoperability proof**: vendored Google's actual published OKF
   sample bundles (`crypto_bitcoin`, `stackoverflow`) under `tests/okf_samples/`
   (Apache-2.0, attributed in NOTICE.md) and a test suite proving they validate
