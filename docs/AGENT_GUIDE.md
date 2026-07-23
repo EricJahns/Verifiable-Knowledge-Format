@@ -2,6 +2,11 @@
 
 This document defines how AI agents should use VKF bundles.
 
+For hosts that support the Claude Code / pi **skill** convention, the rules
+below are packaged as two runnable procedures: [`skills/vkf-retrieve/SKILL.md`](../skills/vkf-retrieve/SKILL.md)
+(finding and citing knowledge) and [`skills/vkf-propose/SKILL.md`](../skills/vkf-propose/SKILL.md)
+(the propose-don't-promote flow for adding knowledge).
+
 ## What the bundle's profile guarantees you
 
 Check the bundle's declared profile (`vkf.bundle.yaml` → `profile`). It is a
