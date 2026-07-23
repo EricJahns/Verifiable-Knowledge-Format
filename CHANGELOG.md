@@ -5,6 +5,26 @@ to [Semantic Versioning](https://semver.org/).
 
 ## [Unreleased]
 
+## [0.6.0] - 2026-07-23
+
+### Added
+- **Core `vkf search`/`vkf get`/`vkf list` CLI commands.** Previously the only
+  way to query a bundle's contents was `vkf serve` or `vkf mcp`, both optional
+  extras. These wrap the same framework-agnostic `KnowledgeService` with zero
+  new dependencies, so any agent with a plain `pip install vkf` can search,
+  fetch, and list concepts (`--json` for structured output; `search` supports
+  `--use`/`--role`/`--limit`/`--include-denied`, matching the server/MCP
+  permission-aware behavior).
+- **`templates/transaction.md`.** AUTHORING.md's agent propose-don't-promote
+  flow always required a transaction record, but shipped no starter template
+  for one — agents had to copy the worked example by hand.
+- **`skills/vkf-retrieve/` and `skills/vkf-propose/`.** Two Claude Code/pi
+  `SKILL.md` files that package AGENT_GUIDE.md's retrieval rules and
+  AUTHORING.md's propose-don't-promote flow into runnable step-by-step
+  procedures, so an agent host doesn't re-derive the access-path decision or
+  the trust rules from prose every time. Linked from README.md and
+  AGENT_GUIDE.md.
+
 ## [0.5.1] - 2026-07-01
 
 ### Fixed
