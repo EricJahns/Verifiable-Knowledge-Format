@@ -104,6 +104,74 @@ def cmd_import_okf(args) -> int:
     return 0
 
 
+def cmd_search(args) -> int:
+    from .service import KnowledgeService
+
+    service = KnowledgeService(args.root)
+    hits = service.search(
+        q=args.query,
+        use=args.use,
+        role=args.role,
+        limit=args.limit,
+        include_denied=args.include_denied,
+    )
+    if args.json:
+        print(json.dumps([h.to_dict() for h in hits], indent=2))
+        return 0
+    if not hits:
+        print("No results")
+        return 0
+    for h in hits:
+        allowed = "-" if h.allowed is None else ("yes" if h.allowed else "no")
+        print(f"{h.id}  [{h.type}]  {h.title}  status={h.status}  score={h.score:g}  allowed={allowed}")
+        print(f"    {h.snippet}")
+    return 0
+
+
+def cmd_get(args) -> int:
+    from .service import KnowledgeService
+
+    service = KnowledgeService(args.root)
+    concept = service.get_concept(args.ref)
+    if concept is None:
+        print(f"Error: unknown concept: {args.ref}", file=sys.stderr)
+        return 1
+    if args.json:
+        print(json.dumps(concept, indent=2, default=str))
+        return 0
+    metadata = concept["metadata"]
+    print(f"id: {concept['id']}")
+    print(f"type: {concept['type']}")
+    print(f"title: {metadata.get('title')}")
+    print(f"status: {metadata.get('status')}")
+    print(f"visibility: {metadata.get('visibility')}")
+    if metadata.get("owners"):
+        print(f"owners: {', '.join(metadata['owners'])}")
+    summary = metadata.get("summary") or metadata.get("description")
+    if summary:
+        print(f"summary: {summary}")
+    if concept["claims"]:
+        print(f"claims: {len(concept['claims'])}")
+    print("\n" + concept["body"])
+    return 0
+
+
+def cmd_list(args) -> int:
+    from .service import KnowledgeService
+
+    service = KnowledgeService(args.root)
+    concepts = service.list_concepts(type=args.type, status=args.status, tag=args.tag)
+    if args.json:
+        print(json.dumps(concepts, indent=2))
+        return 0
+    if not concepts:
+        print("No concepts found")
+        return 0
+    for c in concepts:
+        print(f"{c['id']}  [{c['type']}]  status={c['status']}  {c['title']}")
+    return 0
+
+
 def cmd_html(args) -> int:
     from .html import write_html
     out = write_html(args.root, args.out, title=args.title)
@@ -215,6 +283,34 @@ def main(argv=None) -> int:
     p.add_argument("root")
     p.add_argument("--enrich", action="store_true", help="Print the governance enrichment plan")
     p.set_defaults(func=cmd_import_okf)
+
+    p = sub.add_parser("search", help="Search a bundle for concepts matching a query")
+    p.add_argument("root")
+    p.add_argument("query")
+    p.add_argument("--use", default=None, help="Use context, e.g. public_release")
+    p.add_argument("--role", default=None)
+    p.add_argument("--limit", type=int, default=20)
+    p.add_argument(
+        "--include-denied",
+        action="store_true",
+        help="Include concepts the use/role context would normally filter out",
+    )
+    p.add_argument("--json", action="store_true", help="Print raw JSON results")
+    p.set_defaults(func=cmd_search)
+
+    p = sub.add_parser("get", help="Fetch one concept by id, alias, or path")
+    p.add_argument("root")
+    p.add_argument("ref")
+    p.add_argument("--json", action="store_true", help="Print the raw concept JSON")
+    p.set_defaults(func=cmd_get)
+
+    p = sub.add_parser("list", help="List concepts in a bundle")
+    p.add_argument("root")
+    p.add_argument("--type", default=None, help="Filter by object type")
+    p.add_argument("--status", default=None, help="Filter by lifecycle status")
+    p.add_argument("--tag", default=None, help="Filter by tag")
+    p.add_argument("--json", action="store_true", help="Print raw JSON results")
+    p.set_defaults(func=cmd_list)
 
     p = sub.add_parser("html", help="Write a self-contained HTML graph visualizer")
     p.add_argument("root")

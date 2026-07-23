@@ -238,6 +238,19 @@ answer. Full setup, tool reference, and worked prompts are in
 
 ---
 
+## Skills
+
+For agent hosts that support the Claude Code / pi **skill** convention
+(`SKILL.md` with YAML frontmatter), `skills/` packages the retrieval rules and
+the propose-don't-promote flow from the docs above into runnable procedures:
+
+| Skill | Role |
+|---|---|
+| [`skills/vkf-retrieve/SKILL.md`](skills/vkf-retrieve/SKILL.md) | Find and cite information in a bundle: pick MCP vs CLI vs raw-file access, respect the declared profile, apply the retrieval rules. |
+| [`skills/vkf-propose/SKILL.md`](skills/vkf-propose/SKILL.md) | Safely propose new/changed knowledge: search first, draft as `status: draft`, validate, write a transaction record, hand off for human review. |
+
+---
+
 ## Does governance actually help? (benchmark)
 
 `vkf benchmark` tests the thesis directly: three conditions (plain RAG, OKF,
